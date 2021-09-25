@@ -2,8 +2,6 @@ from math import radians, cos, sin, asin, sqrt
 import pandas as pd
 import numpy as np
 
-# train_df = pd.read_csv('data/train.csv')
-# test_df = pd.read_csv('data/test.csv')
 
 salary_data = pd.read_csv('data/salary.csv', delimiter=";")[["Name", "2020"]]
 salary_data.rename(columns={"Name":"region", '2020':'salary'}, inplace=True)
@@ -52,7 +50,7 @@ def calculate_statistics(dataframe):
 
     dataframe['has_subway'] = dataframe['city'].apply(lambda x: is_subway(x))
     dataframe['osm_subway_closest_dist'] = dataframe['osm_subway_closest_dist'] * dataframe['has_subway']
-    dataframe['subway_statios'] = dataframe['city'].apply(lambda x: subway_stations(x)) 
+    dataframe['subway_stations'] = dataframe['city'].apply(lambda x: subway_stations(x)) 
 
 
     radius_buildings_features = ['osm_catering_points_in_', 'osm_shops_points_in_', 'osm_offices_points_in_', 'osm_finance_points_in_', 
