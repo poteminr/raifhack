@@ -61,7 +61,7 @@ if __name__ == "__main__":
         logger.info('Load model')
         model = BenchmarkModel.load(args['mp'])
         logger.info('Predict')
-        test_df['per_square_meter_price'] = 0.94 * model.predict(test_df[NUM_FEATURES+CATEGORICAL_OHE_FEATURES+CATEGORICAL_STE_FEATURES])
+        test_df['per_square_meter_price'] = 0.89 * model.predict(test_df[NUM_FEATURES+CATEGORICAL_OHE_FEATURES+CATEGORICAL_STE_FEATURES])
         logger.info('Save results')
         # test_df[['id','per_square_meter_price']].to_csv(args['o'], index=False)
 

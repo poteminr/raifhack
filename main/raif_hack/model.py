@@ -49,7 +49,7 @@ class BenchmarkModel():
              self.ste_cat_features)])
 
         # self.model = LGBMRegressor(**model_params)
-        self.model = CatBoostRegressor(learning_rate=0.05, iterations=2500)
+        self.model = CatBoostRegressor(learning_rate=0.05, iterations=1200, depth=12)
 
         self.pipeline = Pipeline(steps=[
             ('preprocessor', self.preprocessor),
