@@ -75,7 +75,26 @@ NUM_FEATURES = ['lat', 'lng', 'osm_amenity_points_in_0.001',
         'centre_lat',
         'centre_lng',
         'population',
-        'distance_from_centre_in_km', 'subway_stations', 'population_in_1000', 'population_in_500']
+        'distance_from_centre_in_km', 
+        'subway_stations', 'population_in_1000', 'population_in_500',
+        # 'less_500_osm_amenity_points_in_',
+        # 'more_500_osm_amenity_points_in_',
+        # 'less_500_osm_building_points_in_',
+        # 'more_500_osm_building_points_in_',
+        # 'more_500_osm_catering_points_in_',
+        # 'less_500_osm_catering_points_in_',
+        # 'more_500_osm_crossing_points_in_',
+        # 'less_500_osm_crossing_points_in_',
+        # 'more_500_osm_culture_points_in_',
+        # 'less_500_osm_culture_points_in_',
+        # 'more_500_osm_finance_points_in_',
+        # 'more_500_osm_offices_points_in_',
+        # 'less_500_osm_offices_points_in_',
+        # 'more_500_osm_shops_points_in_',
+        # 'less_500_osm_shops_points_in_',
+        'mean_price_by_type_and_population'
+        
+        ]
 
 MODEL_PARAMS = dict(
             n_estimators=2000,

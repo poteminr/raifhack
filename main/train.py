@@ -43,7 +43,7 @@ if __name__ == "__main__":
         train_df = pd.read_csv(args['d'])
         logger.info(f'Input shape: {train_df.shape}')
         train_df = prepare_categorical(train_df)
-        train_df = preprocessing.preprocessing(train_df)
+        train_df = preprocessing.preprocessing(train_df, is_train=True)
 
         train_df[['federal_district']] = train_df[['federal_district']].fillna(UNKNOWN_VALUE)
 

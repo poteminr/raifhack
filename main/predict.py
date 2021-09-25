@@ -11,6 +11,8 @@ from raif_hack.settings import LOGGING_CONFIG, NUM_FEATURES, CATEGORICAL_OHE_FEA
 from raif_hack import preprocessing 
 from raif_hack.utils import UNKNOWN_VALUE
 
+from lightgbm import LGBMRegressor
+
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 
@@ -50,7 +52,7 @@ if __name__ == "__main__":
         test_df = prepare_categorical(test_df)
         print(test_df.shape)
 
-        test_df = preprocessing.preprocessing(test_df)
+        test_df = preprocessing.preprocessing(test_df, is_train=False)
         test_df[['federal_district']] = test_df[['federal_district']].fillna(UNKNOWN_VALUE)
         
         # print(test_df.shape)

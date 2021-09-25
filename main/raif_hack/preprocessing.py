@@ -38,6 +38,19 @@ def subway_stations(city):
     else:
         return 0
 
+
+
+# def special_counter(dataframe):
+#     features = ["osm_catering_points_in_", "osm_shops_points_in_", "osm_offices_points_in_", "osm_finance_points_in_", "osm_building_points_in_",
+#                 "osm_culture_points_in_", "osm_amenity_points_in_", "osm_crossing_points_in_"]
+
+#     for i in features:
+#             dataframe['less_500_' + str(i)] = dataframe[i + '0.001'] + dataframe[i + '0.005']
+#             dataframe['more_500_' + str(i)] = dataframe[i + '0.0075'] + dataframe[i + '0.01']
+
+#     # return dataframe
+
+
 def calculate_statistics(dataframe):
     dataframe['population_per_house_1000'] = dataframe['reform_house_population_1000'] / dataframe['reform_count_of_houses_1000']
     dataframe['population_per_house_500'] = dataframe['reform_house_population_500'] / dataframe['reform_count_of_houses_500']
@@ -51,20 +64,28 @@ def calculate_statistics(dataframe):
     dataframe['has_subway'] = dataframe['city'].apply(lambda x: is_subway(x))
     # dataframe['osm_subway_closest_dist'] = dataframe['osm_subway_closest_dist'] * dataframe['has_subway']
     dataframe['subway_stations'] = dataframe['city'].apply(lambda x: subway_stations(x)) 
+    # special_counter(dataframe)
 
-
-    radius_buildings_features = ['osm_catering_points_in_', 'osm_shops_points_in_', 'osm_offices_points_in_', 'osm_finance_points_in_', 
-                       'osm_healthcare_points_in_', 'osm_leisure_points_in_', 'osm_hotels_points_in_', 'osm_amenity_points_in_']
+    # radius_buildings_features = ['osm_catering_points_in_', 'osm_shops_points_in_', 'osm_offices_points_in_', 'osm_finance_points_in_', 'osm_amenity_points_in_']
     
-    population_features = radius_buildings_features + ['osm_leisure_points_in_', 'osm_culture_points_in_', 'osm_train_stop_points_in_',
-                                                       'osm_transport_stop_points_in_', 'osm_crossing_points_in_']
+    # population_features = radius_buildings_features + ['osm_leisure_points_in_', 'osm_culture_points_in_', 'osm_train_stop_points_in_',
+    #                                                    'osm_transport_stop_points_in_', 'osm_crossing_points_in_']
 
-    col_list = dataframe.columns
-    # for radius in ['0.001', '0.005', '0.0075', '0.01']:
-    #     for feature in radius_buildings_features:
-    #         col_name = feature + radius
-    #         if col_name in col_list:
-    #             dataframe[f'percent of {col_name}'] = dataframe[col_name] / dataframe[f'osm_building_points_in_{radius}']
+
+    
+    # col_list = dataframe.columns
+    # # for radius in ['0.001', '0.005', '0.0075', '0.01']:
+    # #     for feature in radius_buildings_features:
+    # #         col_name = feature + radius
+    # #         if col_name in col_list:
+    # #             dataframe[f'percent of {col_name}'] = dataframe[col_name] / dataframe[f'osm_building_points_in_{radius}']
+
+    # for feature in radius_buildings_features:
+        
+    #     dataframe[feature+'only_0.01'] = dataframe[feature+'0.01'] - dataframe[feature+'0.0075']
+    #     dataframe[feature+'only_0.0075'] = dataframe[feature+'0.0075'] - dataframe[feature+'0.005']
+    #     dataframe[feature+'only_0.05'] = dataframe[feature+'0.005'] - dataframe[feature+'0.001']
+
 
     # for radius in ['0.005', '0.01']:
     #     for feature in population_features:
@@ -110,10 +131,47 @@ def add_additional_data(dataframe):
 
 
     return dataframe
-    
 
-def preprocessing(dataframe):
+
+
+def get_mean(x, lower500k, higher500k_lower_1kk, higger_1kk):
+    types = {10:0, 100:1, 110:2}
+
+    if x.population <= 500000:
+        return lower500k.iloc[types[x.realty_type]]['per_square_meter_price']
+    elif x.population > 500000 and x.population < 1000000:
+        return higher500k_lower_1kk.iloc[types[x.realty_type]]['per_square_meter_price']
+    elif x.population >= 1000000:
+        return higger_1kk.iloc[types[x.realty_type]]['per_square_meter_price']
+        
+    
+def global_datarfame_statistics(dataframe, path_to_train, is_train=False):
+
+
+    if is_train:
+
+        lower500k = dataframe[(dataframe['population'] < 500000)][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
+        higher500k_lower_1kk = dataframe[(dataframe['population'] > 500000) & (dataframe['population'] < 1000000)][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
+        higger_1kk = dataframe[dataframe['population'] > 1000000][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
+
+
+    else:
+        train = pd.read_csv(path_to_train)
+        train = calculate_statistics(train)
+        train = add_additional_data(train)
+
+        lower500k = train[(train['population'] <= 500000)][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
+        higher500k_lower_1kk = train[(train['population'] > 500000) & (train['population'] < 1000000)][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
+        higger_1kk = train[train['population'] >= 1000000][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
+
+
+    dataframe['mean_price_by_type_and_population'] = dataframe.apply(lambda x: get_mean(x, lower500k, higher500k_lower_1kk, higger_1kk), axis=1)
+    
+    return dataframe
+
+def preprocessing(dataframe,  is_train=False):
     dataframe = calculate_statistics(dataframe)
     dataframe = add_additional_data(dataframe)
+    dataframe =  global_datarfame_statistics(dataframe, "data/train.csv", is_train=is_train)
 
     return dataframe
