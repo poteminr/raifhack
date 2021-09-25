@@ -23,7 +23,7 @@ def haversine(lon1, lat1, lon2, lat2):
     km = 6371* c
     return km
 
-def calculate_statistic(dataframe):
+def calculate_statistics(dataframe):
     dataframe['population_per_house_1000'] = dataframe['reform_house_population_1000'] / dataframe['reform_count_of_houses_1000']
     dataframe['population_per_house_500'] = dataframe['reform_house_population_500'] / dataframe['reform_count_of_houses_500']
 
