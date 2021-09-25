@@ -11,3 +11,9 @@
     <li> запустить предикт
 
     poetry run python3 predict.py --model_path <path_to_pickled_model> --test_data <path_to_test_data> --output <path_to_output_csv_file>
+
+## Описание директорий:
+* models - модели к каждому комиту(с хорошим скором)
+* outputs - файлы с предиктами
+* notebooks - тетрадки с экспериментами, обзором данных(советую pandas profiling), фич. импортансом моделей(советую eli5)
+* raif_hack - технические файлы, как в бейзлайне
