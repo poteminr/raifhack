@@ -143,7 +143,15 @@ def get_mean(x, lower500k, higher500k_lower_1kk, higger_1kk):
         return higher500k_lower_1kk.iloc[types[x.realty_type]]['per_square_meter_price']
     elif x.population >= 1000000:
         return higger_1kk.iloc[types[x.realty_type]]['per_square_meter_price']
-        
+    
+
+def get_region_stat(x, region_stats):
+    median_by_type = {10:52699, 100:66701, 110:70106}
+    if  pd.isnull(x.federal_district):
+        return median_by_type[x.realty_type]
+    else:
+        return region_stats.loc[(x.federal_district, x.realty_type)]['per_square_meter_price']
+
     
 def global_datarfame_statistics(dataframe, path_to_train, is_train=False):
 
@@ -153,6 +161,8 @@ def global_datarfame_statistics(dataframe, path_to_train, is_train=False):
         lower500k = dataframe[(dataframe['population'] < 500000)][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
         higher500k_lower_1kk = dataframe[(dataframe['population'] > 500000) & (dataframe['population'] < 1000000)][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
         higger_1kk = dataframe[dataframe['population'] > 1000000][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
+
+        region_stats = dataframe[["federal_district", "realty_type", "per_square_meter_price"]].groupby(["federal_district", 'realty_type']).median()
 
 
     else:
@@ -164,9 +174,13 @@ def global_datarfame_statistics(dataframe, path_to_train, is_train=False):
         higher500k_lower_1kk = train[(train['population'] > 500000) & (train['population'] < 1000000)][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
         higger_1kk = train[train['population'] >= 1000000][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
 
+        region_stats = train[["federal_district", "realty_type", "per_square_meter_price"]].groupby(["federal_district", 'realty_type']).median()
+
+
+
 
     dataframe['mean_price_by_type_and_population'] = dataframe.apply(lambda x: get_mean(x, lower500k, higher500k_lower_1kk, higger_1kk), axis=1)
-    
+    dataframe['median_price_by_type_and_region'] = dataframe.apply(lambda x: get_region_stat(x, region_stats), axis=1)
     return dataframe
 
 def preprocessing(dataframe,  is_train=False):

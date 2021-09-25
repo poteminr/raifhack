@@ -92,8 +92,9 @@ NUM_FEATURES = ['lat', 'lng', 'osm_amenity_points_in_0.001',
         # 'less_500_osm_offices_points_in_',
         # 'more_500_osm_shops_points_in_',
         # 'less_500_osm_shops_points_in_',
+        'median_price_by_type_and_region',
         'mean_price_by_type_and_population'
-        
+
         ]
 
 MODEL_PARAMS = dict(
