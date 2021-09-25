@@ -40,17 +40,6 @@ def subway_stations(city):
 
 
 
-# def special_counter(dataframe):
-#     features = ["osm_catering_points_in_", "osm_shops_points_in_", "osm_offices_points_in_", "osm_finance_points_in_", "osm_building_points_in_",
-#                 "osm_culture_points_in_", "osm_amenity_points_in_", "osm_crossing_points_in_"]
-
-#     for i in features:
-#             dataframe['less_500_' + str(i)] = dataframe[i + '0.001'] + dataframe[i + '0.005']
-#             dataframe['more_500_' + str(i)] = dataframe[i + '0.0075'] + dataframe[i + '0.01']
-
-#     # return dataframe
-
-
 def calculate_statistics(dataframe):
     dataframe['population_per_house_1000'] = dataframe['reform_house_population_1000'] / dataframe['reform_count_of_houses_1000']
     dataframe['population_per_house_500'] = dataframe['reform_house_population_500'] / dataframe['reform_count_of_houses_500']
@@ -186,6 +175,6 @@ def global_datarfame_statistics(dataframe, path_to_train, is_train=False):
 def preprocessing(dataframe,  is_train=False):
     dataframe = calculate_statistics(dataframe)
     dataframe = add_additional_data(dataframe)
-    dataframe =  global_datarfame_statistics(dataframe, "data/train.csv", is_train=is_train)
+    dataframe = global_datarfame_statistics(dataframe, "data/train.csv", is_train=is_train)
 
     return dataframe
