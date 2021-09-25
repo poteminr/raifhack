@@ -5,6 +5,7 @@ import numpy as np
 import logging
 
 from lightgbm import LGBMRegressor
+from catboost import CatBoostRegressor
 
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -47,7 +48,8 @@ class BenchmarkModel():
             ('ste', OrdinalEncoder(handle_unknown='use_encoded_value',unknown_value=-1),
              self.ste_cat_features)])
 
-        self.model = LGBMRegressor(**model_params)
+        # self.model = LGBMRegressor(**model_params)
+        self.model = CatBoostRegressor(learning_rate=0.05, iterations=2500)
 
         self.pipeline = Pipeline(steps=[
             ('preprocessor', self.preprocessor),
@@ -78,10 +80,10 @@ class BenchmarkModel():
         :param y_manual: pd.Series - цены ручника
         """
         logger.info('Fit lightgbm')
-        self.pipeline.fit(X_offer, y_offer, model__feature_name=[f'{i}' for i in range(96)],model__categorical_feature=['67','68','69'])
+        self.pipeline.fit(X_manual, y_manual)
         logger.info('Find corr coefficient')
-        self._find_corr_coefficient(X_manual, y_manual)
-        logger.info(f'Corr coef: {self.corr_coef:.2f}')
+        # self._find_corr_coefficient(X_manual, y_manual)
+        # logger.info(f'Corr coef: {self.corr_coef:.2f}')
         self.__is_fitted = True
 
     def predict(self, X: pd.DataFrame) -> np.array:
@@ -93,8 +95,8 @@ class BenchmarkModel():
         """
         if self.__is_fitted:
             predictions = self.pipeline.predict(X)
-            corrected_price = predictions * (1 + self.corr_coef)
-            return corrected_price
+            # corrected_price = predictions * (1 + self.corr_coef)
+            return predictions
         else:
             raise NotFittedError(
                 "This {} instance is not fitted yet! Call 'fit' with appropriate arguments before predict".format(

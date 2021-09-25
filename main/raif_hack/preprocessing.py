@@ -118,7 +118,7 @@ def add_additional_data(dataframe):
 
     dataframe['population'] = dataframe.apply(lambda x: x['osm_city_nearest_population'] if x['is_nearest_city'] else x['population'], axis=1)
 
-
+    dataframe['total_square_ln'] = np.log(dataframe['total_square'])
     return dataframe
 
 
@@ -176,5 +176,5 @@ def preprocessing(dataframe,  is_train=False):
     dataframe = calculate_statistics(dataframe)
     dataframe = add_additional_data(dataframe)
     dataframe = global_datarfame_statistics(dataframe, "data/train.csv", is_train=is_train)
-
+    
     return dataframe

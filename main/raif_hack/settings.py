@@ -40,7 +40,7 @@ NUM_FEATURES = ['lat', 'lng', 'osm_amenity_points_in_0.001',
        'reform_house_population_1000', 'reform_house_population_500',
     #    'reform_mean_floor_count_1000', 'reform_mean_floor_count_500',
     #    'reform_mean_year_building_1000', 'reform_mean_year_building_500',
-       'total_square',
+       'total_square','total_square_ln',
         'population_per_house_1000',
         'population_per_house_500',
         # 'population_per_floor_1000',
@@ -78,7 +78,7 @@ NUM_FEATURES = ['lat', 'lng', 'osm_amenity_points_in_0.001',
         'distance_from_centre_in_km', 
         'subway_stations', 'population_in_1000', 'population_in_500',
         'median_price_by_type_and_region',
-        'mean_price_by_type_and_population'
+        'mean_price_by_type_and_population', 
 
         ]
 
