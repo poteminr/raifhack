@@ -30,7 +30,8 @@ def parse_args():
     )
 
     parser.add_argument("--train_data", "-d", type=str, dest="d", required=True, help="Путь до обучающего датасета")
-    parser.add_argument("--model_path", "-mp", type=str, dest="mp", required=True, help="Куда сохранить обученную ML модель")
+    parser.add_argument("--model_path_russia", "-mpr", type=str, dest="mpr", required=True, help="Куда сохранить обученную ML модель")
+    parser.add_argument("--model_path_mspb", "-mpspb", type=str, dest="mpspb", required=True, help="Куда сохранить обученную ML модель")
 
     return parser.parse_args()
 
@@ -53,20 +54,64 @@ if __name__ == "__main__":
         y_manual = train_df[train_df.price_type == PriceTypeEnum.MANUAL_PRICE][TARGET]
         
         logger.info(f'X_offer {X_offer.shape}  y_offer {y_offer.shape}\tX_manual {X_manual.shape} y_manual {y_manual.shape}')
-        model = BenchmarkModel(numerical_features=NUM_FEATURES, ohe_categorical_features=CATEGORICAL_OHE_FEATURES,
+        model_russia = BenchmarkModel(numerical_features=NUM_FEATURES, ohe_categorical_features=CATEGORICAL_OHE_FEATURES,
                                   ste_categorical_features=CATEGORICAL_STE_FEATURES, model_params=MODEL_PARAMS)
+
+        model_moscow_and_spb = BenchmarkModel(numerical_features=NUM_FEATURES, ohe_categorical_features=CATEGORICAL_OHE_FEATURES,
+                                  ste_categorical_features=CATEGORICAL_STE_FEATURES, model_params=MODEL_PARAMS)
+
+
+        X_offer_mspb = X_offer[(X_offer.city == "Москва") | (X_offer.city == "Санкт-Петербург")]
+        y_offer_mspb = train_df[(train_df.price_type == PriceTypeEnum.OFFER_PRICE) & ((train_df.city == "Москва") | (train_df.city == "Санкт-Петербург"))][TARGET]
+        X_manual_mspb = X_manual[(X_manual.city == "Москва") | (X_manual.city == "Санкт-Петербург")]
+        y_manual_mspb = train_df[(train_df.price_type == PriceTypeEnum.MANUAL_PRICE) & ((train_df.city == "Москва") | (train_df.city == "Санкт-Петербург"))][TARGET]
+
+        X_offer_russia = X_offer[(X_offer.city != "Москва") & (X_offer.city != "Санкт-Петербург")]
+        y_offer_russia = train_df[(train_df.price_type == PriceTypeEnum.OFFER_PRICE) & ((train_df.city != "Москва") & (train_df.city != "Санкт-Петербург"))][TARGET]
+        X_manual_russia = X_manual[(X_manual.city != "Москва") & (X_manual.city != "Санкт-Петербург")]
+        y_manual_russia = train_df[(train_df.price_type == PriceTypeEnum.MANUAL_PRICE) & ((train_df.city != "Москва") & (train_df.city != "Санкт-Петербург"))][TARGET]      
+
+
+
+        print(X_offer_mspb.shape)
+        print(X_manual_mspb.shape)
+
+        print(X_offer_russia.shape)
+        print(X_manual_russia.shape)
+
+
+
         logger.info('Fit model')
-        model.fit(X_offer, y_offer, X_manual, y_manual)
+        # model.fit(X_offer, y_offer, X_manual, y_manual)
+
+        model_russia.fit(X_offer_russia, y_offer_russia, X_manual_russia, y_manual_russia, [f'{i}' for i in range(99)])
+        model_moscow_and_spb.fit(X_offer_mspb, y_offer_mspb, X_manual_mspb, y_manual_mspb, [f'{i}' for i in range(92)])
+
         logger.info('Save model')
-        model.save(args['mp'])
+        # model.save(args['mp'])
+        model_russia.save(args['mpr'])
+        model_moscow_and_spb.save(args['mpspb'])
 
-        predictions_offer = model.predict(X_offer)
-        metrics = metrics_stat(y_offer.values, predictions_offer/(1+model.corr_coef)) # для обучающей выборки с ценами из объявлений смотрим качество без коэффициента
-        logger.info(f'Metrics stat for training data with offers prices: {metrics}')
+        # predictions_offer = model.predict(X_offer)
+        predictions_offer_russia = model_russia.predict(X_offer_russia)
+        predictions_offer_mspb = model_moscow_and_spb.predict(X_offer_mspb)
 
-        predictions_manual = model.predict(X_manual)
-        metrics = metrics_stat(y_manual.values, predictions_manual)
-        logger.info(f'Metrics stat for training data with manual prices: {metrics}')
+
+        # metrics = metrics_stat(y_offer.values, predictions_offer/(1+model.corr_coef)) # для обучающей выборки с ценами из объявлений смотрим качество без коэффициента
+        # logger.info(f'Metrics stat for training data with offers prices: {metrics}')
+        metrics_russia = metrics_stat(y_offer_russia.values, predictions_offer_russia/(1+model_russia.corr_coef)) # для обучающей выборки с ценами из объявлений смотрим качество без коэффициента
+        metrics_spbm = metrics_stat(y_offer_mspb.values, predictions_offer_mspb/(1+model_moscow_and_spb.corr_coef)) # для обучающей выборки с ценами из объявлений смотрим качество без коэффициента
+
+
+
+        # predictions_manual = model.predict(X_manual)
+        predictions_manual_russia = model_russia.predict(X_manual_russia)
+        predictions_manual_spbm = model_moscow_and_spb.predict(X_manual_mspb)
+
+
+
+        # metrics = metrics_stat(y_manual.values, predictions_manual)
+        # logger.info(f'Metrics stat for training data with manual prices: {metrics}')
 
 
     except Exception as e:

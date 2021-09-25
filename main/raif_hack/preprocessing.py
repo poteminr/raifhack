@@ -49,7 +49,7 @@ def calculate_statistics(dataframe):
     dataframe['mean_house_age_1000'] = 2020 - dataframe['reform_mean_year_building_1000']
 
     dataframe['has_subway'] = dataframe['city'].apply(lambda x: is_subway(x))
-    dataframe['osm_subway_closest_dist'] = dataframe['osm_subway_closest_dist'] * dataframe['has_subway']
+    # dataframe['osm_subway_closest_dist'] = dataframe['osm_subway_closest_dist'] * dataframe['has_subway']
     dataframe['subway_stations'] = dataframe['city'].apply(lambda x: subway_stations(x)) 
 
 

@@ -3,7 +3,7 @@ TARGET = 'per_square_meter_price'
 CATEGORICAL_STE_FEATURES = ['region', 'city', 'realty_type', 'federal_district', 'osm_city_nearest_name']
 
 # признаки, для которых применяем one hot encoding
-CATEGORICAL_OHE_FEATURES = ['fias_level', 'capital_marker', 'is_nearest_city']
+CATEGORICAL_OHE_FEATURES = ['fias_level', 'capital_marker', 'is_nearest_city', 'has_subway', 'is_million_citizens']
 
 # численные признаки
 NUM_FEATURES = ['lat', 'lng', 'osm_amenity_points_in_0.001',
@@ -74,7 +74,7 @@ NUM_FEATURES = ['lat', 'lng', 'osm_amenity_points_in_0.001',
         'centre_lat',
         'centre_lng',
         'population',
-        'distance_from_centre_in_km']
+        'distance_from_centre_in_km', 'subway_stations', 'population_in_1000', 'population_in_500']
 
 MODEL_PARAMS = dict(
             n_estimators=2000,

@@ -67,7 +67,7 @@ class BenchmarkModel():
         self.corr_coef = deviation
 
     def fit(self, X_offer: pd.DataFrame, y_offer: pd.Series,
-            X_manual: pd.DataFrame, y_manual: pd.Series):
+            X_manual: pd.DataFrame, y_manual: pd.Series, nfn):
         """Обучение модели.
         ML модель обучается на данных по предложениям на рынке (цены из объявления)
         Затем вычисляется среднее отклонение между руяными оценками и предиктами для корректировки стоимости
@@ -78,7 +78,7 @@ class BenchmarkModel():
         :param y_manual: pd.Series - цены ручника
         """
         logger.info('Fit lightgbm')
-        self.pipeline.fit(X_offer, y_offer, model__feature_name=[f'{i}' for i in range(91)],model__categorical_feature=['67','68','69'])
+        self.pipeline.fit(X_offer, y_offer, model__feature_name=nfn,model__categorical_feature=['67','68','69'])
         logger.info('Find corr coefficient')
         self._find_corr_coefficient(X_manual, y_manual)
         logger.info(f'Corr coef: {self.corr_coef:.2f}')
