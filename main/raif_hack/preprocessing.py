@@ -146,7 +146,7 @@ def global_datarfame_statistics(dataframe, path_to_train, is_train=False):
 
 
     if is_train:
-
+        dataframe = dataframe[dataframe.price_type == 1]
         lower500k = dataframe[(dataframe['population'] < 500000)][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
         higher500k_lower_1kk = dataframe[(dataframe['population'] > 500000) & (dataframe['population'] < 1000000)][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
         higger_1kk = dataframe[dataframe['population'] > 1000000][["population", "realty_type", "per_square_meter_price"]].groupby("realty_type").median()
@@ -156,6 +156,8 @@ def global_datarfame_statistics(dataframe, path_to_train, is_train=False):
 
     else:
         train = pd.read_csv(path_to_train)
+        train = train[train.price_type == 1]
+
         train = calculate_statistics(train)
         train = add_additional_data(train)
 
