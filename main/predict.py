@@ -29,14 +29,8 @@ def parse_args():
     )
 
     parser.add_argument("--test_data", "-d", type=str, dest="d", required=True, help="Путь до отложенной выборки")
-    # parser.add_argument("--model_path", "-mp", type=str, dest="mp", required=True,
-    #                     help="Пусть до сериализованной ML модели")
-    parser.add_argument("--model_path_russia", "-mpr", type=str, dest="mpr", required=True,
+    parser.add_argument("--model_path", "-mp", type=str, dest="mp", required=True,
                         help="Пусть до сериализованной ML модели")
-
-    parser.add_argument("--model_path_mspb", "-mpspbm", type=str, dest="mpspbm", required=True,
-                        help="Пусть до сериализованной ML модели")
-
     parser.add_argument("--output", "-o", type=str, dest="o", required=True, help="Путь до выходного файла")
 
     return parser.parse_args()
@@ -61,26 +55,15 @@ if __name__ == "__main__":
         
         # print(test_df.shape)
 
-        test_df_mspb = test_df[(test_df['city'] == "Москва") | (test_df['city'] == "Санкт-Петербург")]
-        test_df_russia = test_df[(test_df['city'] != "Москва") & (test_df['city'] != "Санкт-Петербург")]
-
 
         logger.info('Load model')
-        # model = BenchmarkModel.load(args['mp'])
-        model_russia = BenchmarkModel.load(args['mpr'])
-        model_mspb = BenchmarkModel.load(args['mpspbm'])
+        model = BenchmarkModel.load(args['mp'])
         logger.info('Predict')
-        # test_df['per_square_meter_price'] = model.predict(test_df[NUM_FEATURES+CATEGORICAL_OHE_FEATURES+CATEGORICAL_STE_FEATURES])
-        test_df_mspb['per_square_meter_price'] = model_mspb.predict(test_df_mspb[NUM_FEATURES+CATEGORICAL_OHE_FEATURES+CATEGORICAL_STE_FEATURES])
-        test_df_russia['per_square_meter_price'] = model_russia.predict(test_df_russia[NUM_FEATURES+CATEGORICAL_OHE_FEATURES+CATEGORICAL_STE_FEATURES])
-
-
+        test_df['per_square_meter_price'] = 0.94 * model.predict(test_df[NUM_FEATURES+CATEGORICAL_OHE_FEATURES+CATEGORICAL_STE_FEATURES])
         logger.info('Save results')
         # test_df[['id','per_square_meter_price']].to_csv(args['o'], index=False)
 
-        ans = pd.concat([test_df_mspb, test_df_russia])
-
-        pd.merge(index_col, ans, on='id')[['id', 'per_square_meter_price']].to_csv(args['o'], index=False)
+        pd.merge(index_col, test_df, on='id')[['id', 'per_square_meter_price']].to_csv(args['o'], index=False)
 
 
         print(test_df.shape)

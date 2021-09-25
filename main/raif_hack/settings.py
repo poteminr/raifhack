@@ -1,6 +1,6 @@
 TARGET = 'per_square_meter_price'
 # признаки (или набор признаков), для которых применяем smoothed target encoding
-CATEGORICAL_STE_FEATURES = ['region', 'city', 'realty_type', 'federal_district', 'osm_city_nearest_name']
+CATEGORICAL_STE_FEATURES = ['street', 'region', 'city', 'realty_type', 'federal_district', 'osm_city_nearest_name']
 
 # признаки, для которых применяем one hot encoding
 CATEGORICAL_OHE_FEATURES = ['fias_level', 'capital_marker', 'is_nearest_city', 'has_subway', 'is_million_citizens']
@@ -38,12 +38,13 @@ NUM_FEATURES = ['lat', 'lng', 'osm_amenity_points_in_0.001',
        'osm_transport_stop_points_in_0.01',
        'reform_count_of_houses_1000', 'reform_count_of_houses_500',
        'reform_house_population_1000', 'reform_house_population_500',
-       'reform_mean_floor_count_1000', 'reform_mean_floor_count_500',
-       'reform_mean_year_building_1000', 'reform_mean_year_building_500','total_square',
+    #    'reform_mean_floor_count_1000', 'reform_mean_floor_count_500',
+    #    'reform_mean_year_building_1000', 'reform_mean_year_building_500',
+       'total_square',
         'population_per_house_1000',
         'population_per_house_500',
-        'population_per_floor_1000',
-        'population_per_floor_500',
+        # 'population_per_floor_1000',
+        # 'population_per_floor_500',
         'mean_house_age_500',
         'mean_house_age_1000',
         # 'osm_catering_points_in_0.005 per population',
@@ -85,6 +86,7 @@ MODEL_PARAMS = dict(
             importance_type="gain",
             n_jobs=-1,
             random_state=563,
+            verbose = 1
         )
 
 LOGGING_CONFIG = {
